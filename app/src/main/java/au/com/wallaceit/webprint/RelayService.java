@@ -1,4 +1,4 @@
-package au.com.wallaceit.httpsocketadaptor;
+package au.com.wallaceit.webprint;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -6,6 +6,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbConstants;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -15,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import fi.iki.elonen.NanoHTTPD;
 
@@ -25,6 +29,7 @@ public class RelayService extends Service {
     private int sourceport;
     private String desthost;
     private int destport;
+    private HashMap<String, UsbDevice> usbPrinters;
 
     public RelayService() {
 
@@ -81,6 +86,7 @@ public class RelayService extends Service {
     }
 
     private boolean startRelay(){
+        refreshUsbDevices();
         htserver = new Server(RelayService.this);
         try {
             htserver.start();
@@ -93,6 +99,29 @@ public class RelayService extends Service {
 
     private void stopRelay(){
         htserver.stop();
+    }
+
+    public void refreshUsbDevices(){
+        usbPrinters = new HashMap<>();
+        UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        for (String s : deviceList.keySet()) {
+            UsbDevice device = deviceList.get(s);
+            boolean deviceIsPrinter = false;
+            if (device.getDeviceClass()==UsbConstants.USB_CLASS_PER_INTERFACE) {
+                for (int i=0; i<device.getInterfaceCount(); i++) {
+                    if (device.getInterface(i).getInterfaceClass()==UsbConstants.USB_CLASS_PRINTER) {
+                        deviceIsPrinter = true;
+                        break;
+                    }
+                }
+            } else if (device.getDeviceClass()==UsbConstants.USB_CLASS_PRINTER){
+                deviceIsPrinter = true;
+            }
+            System.out.println("Printer added to list: "+device.getDeviceName());
+            if (deviceIsPrinter)
+                usbPrinters.put(s, device);
+        }
     }
 
     @Override
@@ -121,7 +150,7 @@ public class RelayService extends Service {
 
         @Override
         public Response serve(IHTTPSession session) {
-            Map<String, String> files = new HashMap<String, String>();
+            Map<String, String> files = new HashMap<>();
             Method method = session.getMethod();
             String responseBody = "1";
             if (Method.PUT.equals(method) || Method.POST.equals(method)) {

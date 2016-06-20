@@ -1,1 +1,1 @@
-include ':HttpSocketAdaptor'
+include ':app'
