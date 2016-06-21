@@ -1,31 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="au.com.wallaceit.webprint" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="au.com.wallaceit.webprint">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/launcher_icon"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="au.com.wallaceit.webprint.MainActivity"
-            android:label="@string/app_name" >
+            android:name=".MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <data android:scheme="https" android:host="wallaceit.com.au" android:pathPrefix="/playstore/webprint" android:path="/index.php" />
+                <data
+                    android:host="wallaceit.com.au"
+                    android:path="/index.php"
+                    android:pathPrefix="/playstore/webprint"
+                    android:scheme="https" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+
         <service
-            android:name="au.com.wallaceit.webprint.RelayService"
+            android:name=".RelayService"
             android:enabled="true"
-            android:exported="true" >
-        </service>
+            android:exported="true" />
+
+        <activity
+            android:name=".AuthDialogActivity"
+            android:theme="@android:style/Theme.Dialog" />
+
+        <receiver
+            android:name=".UsbReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="au.com.wallaceit.webprint.USB_PERMISSION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
