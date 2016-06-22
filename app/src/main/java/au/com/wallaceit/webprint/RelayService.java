@@ -248,9 +248,10 @@ public class RelayService extends Service {
                                                 }
                                             }
                                             if (authResult) {
-                                                if (!sendUsb(printer, data)){
-                                                    responseJson.put("error", "Printing failed");
-                                                    System.out.println("USB printing failed");
+                                                if (sendUsb(printer, data)){
+                                                    createNotification("Print Job Submitted");
+                                                } else {
+                                                    createNotification("Print Job Error!");
                                                 }
                                             } else {
                                                 responseJson.put("error", "Webprint access was denied for this printer.");
@@ -297,7 +298,7 @@ public class RelayService extends Service {
         }
 
         private boolean sendUsb(UsbDevice printer, byte[] data){
-            System.out.println("Sending USB data!!!");
+
             UsbInterface intf = null;
             if (printer.getInterfaceCount()>1 && printer.getDeviceClass()==UsbConstants.USB_CLASS_PER_INTERFACE){
                 for (int i=0; i<printer.getInterfaceCount(); i++){
@@ -340,10 +341,9 @@ public class RelayService extends Service {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println("Forwarded data");
                 return true;
             } catch (IOException e) {
-                System.out.println("Forward failed");
+                System.out.println("TCP IO failed");
                 e.printStackTrace();
                 return false;
             }

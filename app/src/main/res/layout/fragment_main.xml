@@ -14,13 +14,24 @@
         android:id="@+id/stattxt"
         android:text="@string/stop_server"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"/>
 
     <Button
         android:id="@+id/serverbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:text="@string/start_server"/>
+
+    <TextView
+        android:id="@+id/sourceport_txt"
+        android:text="@string/service_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
     <EditText
         android:id="@+id/sourceport"
@@ -29,5 +40,19 @@
         android:inputType="number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/allowed_domains"
+        android:text="@string/allowed_domains"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+
+    <ListView
+        android:id="@+id/acllist"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
 
 </LinearLayout>

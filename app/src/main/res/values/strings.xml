@@ -14,4 +14,11 @@
     <string name="access_request_msg">%s is trying to access your usb &amp; network printers.\nWould you like to allow?\nOnly click yes for sites you trust.</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="allowed_domains">Allowed Domains</string>
+    <string name="service_port">Service port:</string>
+    <string name="remove_domain">Remove access?</string>
+    <string name="remove_domain_message">Revoke access to WebPrint for this site?</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="no_allowed_domains">No allowed domains yet</string>
 </resources>

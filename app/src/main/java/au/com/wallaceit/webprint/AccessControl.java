@@ -22,6 +22,8 @@ import android.content.SharedPreferences;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -39,13 +41,13 @@ public class AccessControl {
         this.loadAcl();
     }
     
-    public String[] getAcl(){
+    public ArrayList<String> getAcl(){
         ArrayList<String> list = new ArrayList<>();
         Iterator iterator = aclmap.keys();
         while (iterator.hasNext()){
             list.add((String) iterator.next());
         }
-        return list.toArray(new String[list.size()]);
+        return list;
     }
 
     private void loadAcl() {

@@ -2,7 +2,9 @@ package au.com.wallaceit.webprint;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,15 +14,21 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
 public class MainActivity extends Activity {
+    private WebPrint app;
     private Button serverbtn;
     private TextView stattxt;
     private EditText sourceport;
-    private SharedPreferences prefs;
+    private ListView aclListview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +36,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.fragment_main);
         serverbtn = (Button) findViewById(R.id.serverbtn);
         stattxt = (TextView) findViewById(R.id.stattxt);
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        app = (WebPrint) getApplicationContext();
         sourceport = (EditText) findViewById(R.id.sourceport);
-        sourceport.setText(prefs.getString("prefsourceport", "8080"));
+        sourceport.setText(app.preferences.getString("prefsourceport", "8080"));
         sourceport.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -43,12 +50,45 @@ public class MainActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                prefs.edit().putString("prefsourceport", sourceport.getText().toString()).apply();
+                app.preferences.edit().putString("prefsourceport", sourceport.getText().toString()).apply();
             }
         });
 
         boolean serverstarted = isServiceRunning(RelayService.class);
         setButton(serverstarted);
+
+        aclListview = (ListView) findViewById(R.id.acllist);
+        refreshListview();
+        aclListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final String origin = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.remove_domain)
+                        .setMessage(R.string.remove_domain_message)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                app.accessControl.remove(origin);
+                                refreshListview();
+                            }
+                        })
+                        .show();
+            }
+        });
+        TextView emptyView = new TextView(this);
+        emptyView.setText(R.string.no_allowed_domains);
+        aclListview.setEmptyView(emptyView);
+    }
+
+    public void onResume(){
+        super.onResume();
+        refreshListview();
+    }
+
+    private void refreshListview(){
+        aclListview.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, app.accessControl.getAcl()));
     }
 
     private boolean isServiceRunning(Class<?> serviceClass) {
