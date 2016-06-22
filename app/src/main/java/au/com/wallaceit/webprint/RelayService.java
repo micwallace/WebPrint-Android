@@ -1,3 +1,21 @@
+/**
+ * This file is part of WebPrint
+ *
+ * @author Michael Wallace
+ *
+ * Copyright (C) 2016 Michael Wallace, WallaceIT
+ *
+ * All rights reserved. This program and the accompanying materials are made
+ * available under the terms of the GNU Lesser General Public License (LGPL)
+ * version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ */
 package au.com.wallaceit.webprint;
 
 import android.app.Notification;
@@ -14,7 +32,6 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -34,7 +51,7 @@ public class RelayService extends Service {
     private static int notifyId = 1;
     private NotificationManager mNotificationManager;
     private Server htserver;
-    private AccessControl aclManager;
+    private WebPrint app;
     private int sourceport;
     private UsbManager usbManager;
     private HashMap<String, UsbDevice> usbPrinters;
@@ -48,7 +65,7 @@ public class RelayService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId){
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        aclManager = new AccessControl(PreferenceManager.getDefaultSharedPreferences(this));
+        app = (WebPrint) getApplicationContext();
         Bundle bundle = intent.getExtras();
         if (bundle!=null) {
             sourceport = Integer.parseInt(bundle.getString("sourceport"));
@@ -191,7 +208,7 @@ public class RelayService extends Service {
                             cookie = request.getString("cookie");
                         }
                         if (action.equals("init")) {
-                            if (!aclManager.isAllowed(origin, cookie)) {
+                            if (!app.accessControl.isAllowed(origin, cookie)) {
                                 System.out.println("Authentication needed for "+origin);
                                 // Not authenticated, show dialog
                                 authResult = false;
@@ -209,7 +226,7 @@ public class RelayService extends Service {
                                 if (authResult) {
                                     // add to acl and return cookie
                                     String ncookie = (UUID.randomUUID()).toString();
-                                    aclManager.add(origin, ncookie);
+                                    app.accessControl.add(origin, ncookie);
                                     responseJson.put("cookie", ncookie);
                                     responseJson.put("ready", true);
                                     System.out.println("Access granted for "+origin);
@@ -221,7 +238,7 @@ public class RelayService extends Service {
                                 responseJson.put("ready", true);
                             }
                         } else {
-                            if (aclManager.isAllowed(origin, cookie)) {
+                            if (app.accessControl.isAllowed(origin, cookie)) {
                                 if (action.equals("listprinters")) {
                                     refreshUsbDevices();
                                     JSONArray deviceArr = new JSONArray();

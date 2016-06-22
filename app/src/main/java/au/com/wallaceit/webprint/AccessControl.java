@@ -3,7 +3,7 @@
  *
  * @author Michael Wallace
  *
- * Copyright (C) 2015 Michael Wallace, WallaceIT
+ * Copyright (C) 2016 Michael Wallace, WallaceIT
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the GNU Lesser General Public License (LGPL)
@@ -27,10 +27,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- *
- * @author michael
- */
 public class AccessControl {
 
     private SharedPreferences preferences;
