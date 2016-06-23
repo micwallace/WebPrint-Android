@@ -5,7 +5,7 @@
         jar="/home/michael/Android Projects/WebPrint/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="22.0.1"
-        sha1="6de7d1cc90ed7b9e580f9684b9ba214b64ab2928">
+        sha1="9b1916f2cf2d845549ee9975b74aceac4f8f3d3b">
         <dex dex="/home/michael/Android Projects/WebPrint/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_af5b12d0067510a406482c60ee4b4c46e9659f98/classes.dex" />
     </item>
 
