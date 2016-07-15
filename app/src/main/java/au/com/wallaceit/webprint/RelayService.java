@@ -213,7 +213,7 @@ public class RelayService extends Service {
                                 // Not authenticated, show dialog
                                 authResult = false;
                                 Intent intent = new Intent(RelayService.this, AuthDialogActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                                 intent.putExtra("origin", origin);
                                 startActivity(intent);
                                 synchronized (authLock) {
