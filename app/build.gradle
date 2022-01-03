@@ -1,9 +1,10 @@
 buildscript {
     repositories {
         mavenCentral()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:3.2.0'
     }
 }
 
@@ -11,15 +12,17 @@ apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
+    google()
+    jcenter()
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 32
+    buildToolsVersion '32.0.0'
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 2
+        targetSdkVersion
+        versionCode 32
         versionName "0.91"
     }
     signingConfigs {
@@ -52,7 +55,7 @@ android {
         }
 
         // Move the tests to tests/java, tests/res, etc...
-        instrumentTest.setRoot('tests')
+        androidTest.setRoot('tests')
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
