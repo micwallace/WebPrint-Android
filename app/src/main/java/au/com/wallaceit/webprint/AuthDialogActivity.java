@@ -21,7 +21,9 @@ package au.com.wallaceit.webprint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Window;
 
 public class AuthDialogActivity extends Activity {
@@ -30,22 +32,26 @@ public class AuthDialogActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.access_request_title)
-            .setMessage(getString(R.string.access_request_msg, getIntent().getStringExtra("origin")))
-            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    returnResultToService(false);
-                }
-            })
-            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    returnResultToService(true);
-                }
-            })
-            .show();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.canDrawOverlays(this)) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.access_request_title)
+                        .setMessage(getString(R.string.access_request_msg, getIntent().getStringExtra("origin")))
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                returnResultToService(false);
+                            }
+                        })
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                returnResultToService(true);
+                            }
+                        })
+                        .show();
+            }
+        }
     }
 
     private void returnResultToService(boolean accpeted){
