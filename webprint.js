@@ -86,6 +86,12 @@ var WebPrint = function (init, opt) {
                 wpwindow.postMessage(JSON.stringify(data), "*");
             }, 220);
         }
+        //freshka 2021-12-29
+        console.log('wpfreeze ::: ' + wpfreeze);
+        if (wpwindow && wpfreeze) {
+            wpwindow.focus();
+            wpfreeze = false;
+        }
         wpwindow.postMessage(JSON.stringify(data), "*");
     }
 
@@ -108,6 +114,7 @@ var WebPrint = function (init, opt) {
         wptimeOut = setTimeout(dispatchWebPrint, 2000);
     };
 
+    var wpfreeze = false; //freshka 2021-12-29
     function handleWebPrintMessage(event) {
         if (event.origin != "http://"+options.relayHost+":"+options.relayPort)
             return;
@@ -118,6 +125,7 @@ var WebPrint = function (init, opt) {
                 sendAppletRequest({a:"init"});
                 break;
             case "response":
+                if (!event.data.json) return; //freshka 2021-12-29
                 var response = JSON.parse(event.data.json);
                 if (response.hasOwnProperty('ports')) {
                     if (options.listPortsCallback instanceof Function)
@@ -135,6 +143,11 @@ var WebPrint = function (init, opt) {
                 if (response.hasOwnProperty("ready")){
                     if (options.readyCallback instanceof Function) options.readyCallback();
                 }
+                break;
+            case "freeze": //freshka 2021-12-29
+				console.log('The printwindow is now frozen.');
+				wpfreeze = true;
+                console.log('wpfreeze ::: ' + wpfreeze);
                 break;
             case "error": // cannot contact print applet from relay window
                 webprint.checkRelay();
