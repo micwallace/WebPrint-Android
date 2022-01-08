@@ -85,9 +85,9 @@ var WebPrint = function (init, opt) {
             setTimeout(function () {
                 wpwindow.postMessage(JSON.stringify(data), "*");
             }, 220);
+            return;
         }
         //freshka 2021-12-29
-        console.log('wpfreeze ::: ' + wpfreeze);
         if (wpwindow && wpfreeze) {
             wpwindow.focus();
             wpfreeze = false;
@@ -145,9 +145,7 @@ var WebPrint = function (init, opt) {
                 }
                 break;
             case "freeze": //freshka 2021-12-29
-				console.log('The printwindow is now frozen.');
 				wpfreeze = true;
-                console.log('wpfreeze ::: ' + wpfreeze);
                 break;
             case "error": // cannot contact print applet from relay window
                 webprint.checkRelay();

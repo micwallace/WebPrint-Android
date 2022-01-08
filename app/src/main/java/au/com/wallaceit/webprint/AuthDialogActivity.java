@@ -34,24 +34,31 @@ public class AuthDialogActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Settings.canDrawOverlays(this)) {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.access_request_title)
-                        .setMessage(getString(R.string.access_request_msg, getIntent().getStringExtra("origin")))
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                returnResultToService(false);
-                            }
-                        })
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                returnResultToService(true);
-                            }
-                        })
-                        .show();
+                showAccessDialog();
             }
+            return;
         }
+
+        showAccessDialog();
+    }
+
+    private void showAccessDialog(){
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.access_request_title)
+                .setMessage(getString(R.string.access_request_msg, getIntent().getStringExtra("origin")))
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        returnResultToService(false);
+                    }
+                })
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        returnResultToService(true);
+                    }
+                })
+                .show();
     }
 
     private void returnResultToService(boolean accpeted){
