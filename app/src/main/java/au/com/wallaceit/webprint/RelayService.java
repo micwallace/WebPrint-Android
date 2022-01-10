@@ -19,17 +19,20 @@
 package au.com.wallaceit.webprint;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Base64;
@@ -86,11 +89,28 @@ public class RelayService extends Service {
     private boolean started = false;
     private boolean even = true;
     private void createNotification(String tickertxt){
-        Notification.Builder mBuilder =
-                new Notification.Builder(this)
-                        .setSmallIcon(R.drawable.icon)
-                        .setContentTitle(getString(R.string.server_running))
-                        .setContentText(getString(R.string.print_server_running));
+
+        Notification.Builder mBuilder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            String NOTIFICATION_CHANNEL_ID = "au.wallaceit.webprint";
+            String channelName = "WebPrint Service";
+            NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(chan);
+
+            mBuilder = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID);
+        } else {
+            mBuilder = new Notification.Builder(this);
+        }
+
+        mBuilder.setSmallIcon(R.drawable.icon)
+                .setContentTitle(getString(R.string.server_running))
+                .setContentText(getString(R.string.print_server_running));
+
         PendingIntent pe = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pe);
         if (tickertxt!=null){
@@ -98,6 +118,9 @@ public class RelayService extends Service {
             even = !even;
         }
         mBuilder.setOngoing(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            mBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
+        }
         if (started) {
             mNotificationManager.notify(notifyId, mBuilder.build());
         } else {
